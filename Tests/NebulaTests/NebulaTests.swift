@@ -6,7 +6,7 @@ final class NebulaTests: XCTestCase {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
-        XCTAssertEqual(Nebula().text, "Hello, World!")
+//        XCTAssertEqual(Nebula().text, "Hello, World!")
     }
 
     static var allTests = [

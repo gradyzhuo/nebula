@@ -29,12 +29,12 @@ import AnyCodable
 
 @dynamicCallable
 public protocol Invocable{
-    func invoke(arguments: [Argument]) throws -> ReturnWrapper?
+    func invoke(arguments: [Argument]) throws -> ReturnWrapper
 }
 
 extension Invocable{
-    public func dynamicallyCall(withKeywordArguments args: RawArguments)->ReturnWrapper?{
-        return try? self.invoke(arguments: args.represented())
+    public func dynamicallyCall(withKeywordArguments args: RawArguments)->ReturnWrapper{
+        return try! self.invoke(arguments: args.represented())
     }
 }
 
@@ -69,7 +69,7 @@ public struct AstralInvoker<AstralType: CallableAstral>:Invocable{
         self.service = service
     }
     
-    public func invoke(arguments: [Argument]) throws -> ReturnWrapper? {
+    public func invoke(arguments: [Argument]) throws -> ReturnWrapper {
         let buffer = try self.client.call(service: service, method: method, arguments: arguments)
         let bytes = buffer.getBytes(at: buffer.readerIndex, length: buffer.readableBytes) ?? []
         let data = Data(bytes)

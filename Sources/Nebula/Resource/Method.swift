@@ -8,7 +8,7 @@
 import Foundation
 //import AnyCodable
 
-public typealias MethodAction = (_ args: [Argument]) -> ReturnWrapper?
+public typealias MethodAction = (_ args: [Argument]) -> ReturnWrapper
 
 public protocol Method{
     var name: String { get }
@@ -37,11 +37,11 @@ public struct ServiceMethod: Method, Invocable{
         self.action = action
     }
     
-    public func invoke(arguments args: RawArguments) throws -> ReturnWrapper? {
+    public func invoke(arguments args: RawArguments) throws -> ReturnWrapper {
         return try self.invoke(arguments: args.represented())
     }
     
-    public func invoke(arguments args: [Argument]) throws -> ReturnWrapper? {
+    public func invoke(arguments args: [Argument]) throws -> ReturnWrapper {
         return self.action(args)
     }
 

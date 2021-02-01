@@ -10,7 +10,10 @@ import Foundation
 public struct ReturnWrapper{
     public internal(set) var data: Data?
     
-    public static func wrap<T: Encodable>(value: T) throws ->Self{
+    public static func wrap<T: Encodable>(value: T?) throws ->Self{
+        guard let value = value else {
+            return .init(data: nil)
+        }
         let encoder = JSONEncoder()
         let data = try encoder.encode(value)
         return .init(data: data)

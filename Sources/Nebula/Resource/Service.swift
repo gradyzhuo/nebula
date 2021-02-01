@@ -27,7 +27,7 @@ public class Service{
     
     public subscript(dynamicMember member: String)->Invocable {
         let defaultMethod = ServiceMethod(name: "NOTSET"){ _ in
-            return nil
+            return ReturnWrapper(data: nil)
         }
         return self.methods[member, default: defaultMethod]
     }
@@ -89,7 +89,7 @@ extension Service{
 //        return try self.perform(method: name, with: arguments)
 //    }
     
-    public func perform(method name: String, with arguments: RawArguments) throws ->ReturnWrapper?{
+    public func perform(method name: String, with arguments: RawArguments) throws ->ReturnWrapper{
 //        guard let method = self.methods[name] else {
 //            return nil
 //        }
@@ -97,10 +97,10 @@ extension Service{
         return try self.perform(method: name, with: arguments.represented())
     }
     
-    public func perform(method name: String, with arguments: [Argument]) throws ->ReturnWrapper?{
+    public func perform(method name: String, with arguments: [Argument]) throws ->ReturnWrapper{
 //        return try perform(method: name, with: try arguments.represented())
         guard let method = self.methods[name] else {
-            return nil
+            return ReturnWrapper(data: nil)
         }
         return try method.invoke(arguments: arguments)
     }

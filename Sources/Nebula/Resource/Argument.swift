@@ -67,33 +67,38 @@ public typealias RawArguments = KeyValuePairs<String, AnyCodable>
 //        return try? Argument.arguments(with: raw)
 //    }
 //}
-public protocol Argument{
-    var key: String { get }
-}
+//public protocol Argument{
+//    var key: String { get }
+//
+//    func unwrap<T: Decodable>(to type: T.Type) throws ->T
+//}
 
 extension KeyValuePairs where Key == String, Value == AnyCodable{
     public func represented() throws ->[Argument]{
         let arguments:[Argument] = try self.compactMap {
-            return try _Argument.wrap(key: $0.key, value: $0.value)
+            return try Argument.wrap(key: $0.key, value: $0.value)
         }
         return arguments
     }
 }
 
-public struct _Argument<Value:Codable>: Argument{
+public struct Argument{
     public internal(set) var key: String
     public internal(set) var data: Data
-    public internal(set) var valueType: Value.Type = Value.self
     
-    internal static func wrap(key: String, value: Any, valueType: Value.Type) throws ->Self{
-        let encodableValue = value as! Value
+//    internal static func wrap(key: String, value: Any, valueType: Value.Type) throws ->Self{
+//        let encodableValue = value as! Value
+//        let encoder = JSONEncoder()
+//        let data = try encoder.encode(encodableValue)
+//        return .init(key: key, data: data)
+//    }
+    
+    public static func wrap(key: String, value: AnyCodable) throws ->Self{
+        let encodableValue = value
         let encoder = JSONEncoder()
         let data = try encoder.encode(encodableValue)
         return .init(key: key, data: data)
-    }
-    
-    public static func wrap(key: String, value: Value) throws ->Self{
-        return try .wrap(key: key, value: value, valueType: Value.self)
+//        return try .wrap(key: key, value: value, valueType: Value.self)
     }
     
     public static func arguments(with values: RawArguments) throws ->[Argument]{
@@ -105,17 +110,17 @@ public struct _Argument<Value:Codable>: Argument{
         self.data = data
     }
     
-    public func unwrap<T: Decodable>(to type: T.Type) throws ->T{
+    public func unwrap() throws -> AnyCodable{
         let decoder = JSONDecoder()
-        return try decoder.decode(T.self, from: self.data)
+        return try decoder.decode(AnyCodable.self, from: self.data)
     }
     
     
 }
 
-extension Array where Element: Argument{
-    public func toDictionary()->[String: Argument]{
-        return Dictionary(uniqueKeysWithValues: self.map{ ($0.key, $0) })
+extension Array where Element == Argument{
+    public func toDictionary()->[String: Any?]{
+        return Dictionary(uniqueKeysWithValues: self.map{ ($0.key, try? $0.unwrap().value) })
     }
 }
 

@@ -82,11 +82,9 @@ public protocol CallableAstral:Astral{
 }
 
 extension MatterTransferClient where AstralType: CallableAstral{
-    public func call(service: String, method: String, argumentsDict: RawArguments) throws -> ByteBuffer{
-        let arguments = try Argument.arguments(with: argumentsDict)
+    public func call(service: String, method: String, arguments: [Argument]) throws -> ByteBuffer{
         let matter = CallMatter(service: service, method: method, arguments: arguments)
         let buffer = try self.request(matter: matter)
-        print(buffer)
         return buffer
     }
 }

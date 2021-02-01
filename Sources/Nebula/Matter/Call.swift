@@ -33,17 +33,18 @@ public struct CallMatter:ProtoBufMatter{
         }
     }
     
-    public var arguments: [Argument]{
-        set{
-            let encoder = JSONEncoder()
-            let data = try! encoder.encode(newValue)
-            self.body.arguments = data
-        }
-        get{
-            let decoder = JSONDecoder()
-            return try! decoder.decode([Argument].self, from: self.body.arguments)
-        }
-    }
+    public var arguments: [Argument] = []
+//    {
+//        set{
+//            let encoder = JSONEncoder()
+//            let data = try! encoder.encode(newValue)
+//            self.body.arguments = data
+//        }
+//        get{
+//            let decoder = JSONDecoder()
+//            return try! decoder.decode([Argument].self, from: self.body.arguments)
+//        }
+//    }
     
 //    public var parameters: [String:Codable]{
 //        set{

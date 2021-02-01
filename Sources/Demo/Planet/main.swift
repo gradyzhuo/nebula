@@ -6,12 +6,14 @@
 //
 
 import Foundation
-@testable import Nebula
+import Nebula
 import NIO
 
-let address = try SocketAddress(ipAddress: "::1", port: 7000)
+let address = try SocketAddress(ipAddress: "::1", port: 7001)
 
-let planet = RoguePlanet<ServiceStellar>(name: "TagEstimation", identifier: UUID())
-try planet.connect(to: address)
-
+let embedding = try RoguePlanet<ServiceStellar>.locate(to: address)
+//try planet.connect(to: address)
+//print(planet.W2V.wordVector)
+let result = embedding.W2V.wordVector(words:["慢跑", "反光", "排汗", "乾爽", "支撐", "止滑", "登山", "健行"])
+print("result:", result)
 RunLoop.main.run()

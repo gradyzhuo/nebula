@@ -70,6 +70,7 @@ extension ServiceStellar: AstralServerDelegatable{
             guard  let service = self.astral.availableServices[matter.serviceName] else {
                 return .failure(NebulaError.fail(message: "service [\(matter.serviceName)] not exists."))
             }
+            
             let results = AnyCodable(try service.perform(method: matter.methodName, with: matter.arguments))
             print("handle call matter:", matter, "result:", results)
             let encoder = JSONEncoder()

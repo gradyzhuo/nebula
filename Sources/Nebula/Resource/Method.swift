@@ -6,19 +6,16 @@
 //
 
 import Foundation
-import AnyCodable
+//import AnyCodable
 
-public typealias RawArguments = [String:Codable]
-public typealias MethodAction = (_ args: RawArguments) ->Codable?
+public typealias MethodAction = (_ args: [Argument]) -> ReturnWrapper?
 
 public protocol Method{
     var name: String { get }
-    var argTypes: [String:ValueType]? { get }
-    var returnType: ValueType? { get }
     var action: MethodAction { get }
 }
 
-public struct ServiceMethod: Method{
+public struct ServiceMethod: Method, Invocable{
     public internal(set) var name: String
     public internal(set) var argTypes: [String:ValueType]?
     public internal(set) var returnType: ValueType?
@@ -40,10 +37,12 @@ public struct ServiceMethod: Method{
         self.action = action
     }
     
-    public func invoke(with args: RawArguments) throws -> Codable? {
+    public func invoke(arguments args: RawArguments) throws -> ReturnWrapper? {
+        return try self.invoke(arguments: args.represented())
+    }
+    
+    public func invoke(arguments args: [Argument]) throws -> ReturnWrapper? {
         return self.action(args)
     }
 
 }
-
-

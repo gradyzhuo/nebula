@@ -10,8 +10,9 @@ import NIO
 
 @dynamicMemberLookup
 public protocol Planet: Astral{
-    func perform(method: String, arguments: RawArguments) -> Codable?
-    func invoker(method: String) -> Invocable
+    func perform(service: String, method: String, arguments: RawArguments) -> ReturnWrapper?
+    func service(service: String) throws -> Service
+//    func invoker(method: String) -> Invocable
 }
 
 extension Planet{
@@ -19,18 +20,20 @@ extension Planet{
         return .planet
     }
     
-    public func callAsFunction(method: String, arguments: RawArguments)->Codable?{
-        return self.perform(method: method, arguments: arguments)
-    }
+//    public func callAsFunction(service: String, method: String, arguments: RawArguments)->Codable?{
+//        return self.perform(service:service, method: method, arguments: arguments)
+//    }
     
-    public subscript(dynamicMember member: String)->Invocable {
-        return invoker(method: member)
+    //service
+    public subscript(dynamicMember member: String)->Service {
+        return try! service(service: member)
     }
 }
 
 public protocol Locatable{
     associatedtype LocatedAstral: Astral
-    var located: MatterTransferClient<LocatedAstral>? { get }
+    var located: MatterTransferClient<LocatedAstral> { get }
+    init(located: MatterTransferClient<LocatedAstral>)
 }
 
 //extension Locatable where LocatedAstral: Stellar{
@@ -43,35 +46,54 @@ public protocol Locatable{
 //}
 
 public class RoguePlanet<LocatedAstral: CallableAstral>: Planet, Locatable{
+    
     public var identifier: UUID = UUID()
-    public var name: String = ""
+    public var name: String{
+        return self.located.name
+    }
     public var namespace: String = ""
     
-    public internal(set) var located: MatterTransferClient<LocatedAstral>?
+    public internal(set) var located: MatterTransferClient<LocatedAstral>
     
-    internal init() {
+    public required init(located: MatterTransferClient<LocatedAstral>) {
+        self.located = located
     }
     
-    public func perform(method: String, arguments: RawArguments) -> Codable?{
+    public func perform(service: String, method: String, arguments: RawArguments) -> ReturnWrapper?{
         do{
-            let invoker = self.invoker(method: method)
-            return try invoker.invoke(arguments: arguments)
+            let invoker = invoker(service: service, method: method)
+            return try invoker.invoke(arguments: arguments.represented())
         }catch{
             print(error)
             return nil
         }
     }
     
-    public func invoker(method: String) -> Invocable{
-        return try! AstralInvoker(client: self.located!, service: self.located!.name, method: method)
+    public func invoker(service: String, method: String)-> Invocable{
+        return try! AstralInvoker(client: self.located, service: service, method: method)
+    }
+    
+    public func service(service: String) throws -> Service{
+        return RPCService(name: service) { method in
+            return self.invoker(service: service, method: method)
+        }
     }
     
 }
 
 extension RoguePlanet{
     internal func connect(to address: SocketAddress, eventLoopGroup: EventLoopGroup? = nil) throws {
-//        self.located = try MatterTransferClient<LocatedAstral>.connect(to: address, eventLoopGroup: eventLoopGroup)
+        self.located = try MatterTransferClient<LocatedAstral>.connect(to: address, eventLoopGroup: eventLoopGroup)
     }
+    //test
+    public static func locate(to address: SocketAddress) throws ->Self{
+        let located = try MatterTransferClient<LocatedAstral>.connect(to: address, eventLoopGroup: nil)
+        return Self.init(located: located)
+    }
+    
+//    public static func locate(to namespace: String, address: SocketAddress) throws ->Self{
+//        
+//    }
 }
 
 extension RoguePlanet where LocatedAstral: Stellar{

@@ -18,6 +18,7 @@ public indirect enum ValueType: CaseIterable{
     case boolean
     case arrayCollection
     case dictionaryCollection
+    case codable
     case collection(_ collection: Self, element: Self)
     
     public static func array(element: Self)->Self{
@@ -27,30 +28,7 @@ public indirect enum ValueType: CaseIterable{
     public static func dictionary(element: Self)->Self{
         return .collection(.dictionaryCollection, element: element)
     }
-    
-//    internal static func by(_ codableValue: AnyCodable)-> Self?{
-//        return Self.by(codableValue.value)
-//    }
-    
-//    internal static func by(_ value: String)->Self?{
-//        return .string
-//    }
-//
-//    internal static func by(_ value: Int)->Self?{
-//        return .int
-//    }
-//
-//    internal static func by(_ value: Float)->Self?{
-//        return .float
-//    }
-//
-//    internal static func by(_ value: Double)->Self?{
-//        return .double
-//    }
-//
-//    internal static func by(_ value: Bool)->Self?{
-//        return .boolean
-//    }
+
 }
 
 extension ValueType{
@@ -98,6 +76,8 @@ extension ValueType{
             return .double
         case is Bool:
             return .boolean
+        case is Codable:
+            return .codable
         default:
             return nil
         }
@@ -146,6 +126,8 @@ extension ValueType: RawRepresentable{
             return 1 << 6
         case .dictionaryCollection:
             return 1 << 7
+        case .codable:
+            return 1 << 0
         case let .collection(type, subtype):
             return type.rawValue | subtype.rawValue
         

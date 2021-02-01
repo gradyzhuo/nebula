@@ -10,8 +10,12 @@ import Foundation
 
 import Nebula
 import AnyCodable
-import Runtime
-import TensorFlow
+//import Runtime
+//import TensorFlow
+
+
+let d: KeyValuePairs<String, AnyCodable> = ["a":"b", "c":2]
+print(try d.represented())
 
 //func test()->AnyAstral{
 //    return StandardGalaxy(name: "xxx")
@@ -112,17 +116,17 @@ import TensorFlow
 //}
 //print("!!!:", r)
 
-@dynamicCallable
-struct A{
-    
-    func dynamicallyCall(withKeywordArguments args: KeyValuePairs<String, Any>){
-        print(args)
-    }
-    
-}
-
-let a = A()
-//a(a: "xx", b: 123)
-
-
-let arguments = KeyValuePairs<String, Codable>(dictionaryLiteral: ("a", 1), ("b", "c"))
+//@dynamicCallable
+//struct A{
+//
+//    func dynamicallyCall(withKeywordArguments args: KeyValuePairs<String, Any>){
+//        print(args)
+//    }
+//
+//}
+//
+//let a = A()
+////a(a: "xx", b: 123)
+//
+//
+//let arguments = KeyValuePairs<String, Codable>(dictionaryLiteral: ("a", 1), ("b", "c"))

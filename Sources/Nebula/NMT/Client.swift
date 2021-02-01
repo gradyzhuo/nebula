@@ -125,7 +125,7 @@ extension Channel {
     }
 }
 
-public final class MatterTransferClient<AstralType: Astral>: Client{
+public final class MatterTransferClient<AstralType>: Client where AstralType:Astral{
     public typealias InboundIn = ByteBuffer
     
     public var name: String
@@ -202,9 +202,7 @@ extension MatterTransferClient{
     }
     
     public static func connect(to address: SocketAddress, eventLoopGroup: EventLoopGroup?) throws -> Self {
-        let astralBuffer = try Self.cloneAstral(from: address)
-        let clonedBytes = astralBuffer.getBytes(at: astralBuffer.readerIndex, length: astralBuffer.readableBytes)
-        let reply = try CloneMatter.Reply(serializedBytes: clonedBytes!)
+        let reply = try Self.cloneAstral(from: address)
         
         let handler = NMTClientInboundHandler()
         let channel = try Self.bootstrap(eventLoopGroup: eventLoopGroup){ channel in
@@ -214,9 +212,11 @@ extension MatterTransferClient{
         return Self.init(target: address, channel: channel, handler: handler, name: reply.name, identifier: reply.identifier)
     }
     
-    internal static func cloneAstral(from address: SocketAddress, eventLoopGroup: EventLoopGroup? = nil) throws->ByteBuffer{
+    internal static func cloneAstral(from address: SocketAddress, eventLoopGroup: EventLoopGroup? = nil) throws->CloneMatter.Reply{
         let matter = CloneMatter(body: CloneMatter.MatterType.SendBody())
         let responseBuffer = try Self.request(to: address, data: matter.serialized(), eventLoopGroup: eventLoopGroup)
-        return responseBuffer
+        let clonedBytes = responseBuffer.getBytes(at: responseBuffer.readerIndex, length: responseBuffer.readableBytes)
+        let reply = try CloneMatter.Reply(serializedBytes: clonedBytes!)
+        return reply
     }
 }

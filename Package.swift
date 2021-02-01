@@ -18,10 +18,10 @@ let package = Package(
         // Dependencies declare other packages that this package depends on.
         .package(url: "https://github.com/apple/swift-nio.git", from: "2.24.0"),
         .package(name:"SwiftProtobuf", url: "https://github.com/apple/swift-protobuf.git", from: "1.14.0"),
-        .package(url: "https://github.com/grpc/grpc-swift.git", from: "1.0.0-alpha.22"),
         .package(url: "https://github.com/Flight-School/AnyCodable.git", from: "0.4.0"),
         .package(url: "https://github.com/wickwirew/Runtime.git", from: "2.2.2"),
-        .package(url: "https://github.com/pvieito/PythonKit.git", .branch("master"))
+        .package(url: "https://github.com/pvieito/PythonKit.git", .branch("master")),
+        .package(url: "https://github.com/apple/swift-nio-extras.git", from: "1.4.0")
         
     ],
     targets: [
@@ -32,9 +32,9 @@ let package = Package(
             dependencies: [
                 .product(name: "NIO", package: "swift-nio"),
                 .product(name: "SwiftProtobuf", package: "SwiftProtobuf"),
-                .product(name: "GRPC", package: "grpc-swift"),
                 .product(name: "AnyCodable", package: "AnyCodable"),
-                .product(name: "Runtime", package: "Runtime")
+                .product(name: "Runtime", package: "Runtime"),
+                .product(name: "NIOExtras", package: "swift-nio-extras")
             ]),
         .testTarget(
             name: "NebulaTests",

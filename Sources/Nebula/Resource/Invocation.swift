@@ -9,14 +9,32 @@ import Foundation
 import NIO
 import AnyCodable
 
+
+//public struct InvokedResult<Encoder: Swift.Encoder, Decoder: Swift.Decoder>{
+//    lazy let encoder = {
+//        return Encoder()
+//    }()
+//    lazy let decoder = {
+//        return Decoder()
+//    }()
+//
+//    var value: Data
+//
+//    public static func wrap(value: Codable)->Self{
+//        Self
+//        return ""
+//    }
+//
+//}
+
 @dynamicCallable
 public protocol Invocable{
-    func invoke(arguments: RawArguments) throws -> Codable?
+    func invoke(arguments: [Argument]) throws -> ReturnWrapper?
 }
 
 extension Invocable{
-    public func dynamicallyCall(withKeywordArguments args: KeyValuePairs<String, Codable>)->Codable?{
-        return try? self.invoke(arguments: Dictionary(uniqueKeysWithValues: args.map { $0 }))
+    public func dynamicallyCall(withKeywordArguments args: RawArguments)->ReturnWrapper?{
+        return try? self.invoke(arguments: args.represented())
     }
 }
 
@@ -51,11 +69,21 @@ public struct AstralInvoker<AstralType: CallableAstral>:Invocable{
         self.service = service
     }
     
-    public func invoke(arguments: RawArguments) throws -> Codable?{
-        let buffer = try self.client.call(service: service, method: method, argumentsDict: arguments)
+    public func invoke(arguments: [Argument]) throws -> ReturnWrapper? {
+        let buffer = try self.client.call(service: service, method: method, arguments: arguments)
         let bytes = buffer.getBytes(at: buffer.readerIndex, length: buffer.readableBytes) ?? []
         let data = Data(bytes)
-        let decoder = JSONDecoder()
-        return try decoder.decode(AnyCodable.self, from: data)
+        return ReturnWrapper(data: data)
+//        let decoder = JSONDecoder()
+//        return try decoder.decode(AnyCodable.self, from: data)
     }
+    
+//    public func invoke(arguments: RawArguments) throws -> Codable?{
+//        let buffer = try self.client.call(service: service, method: method, argumentsDict: arguments)
+//        print(String(buffer: buffer))
+//        let bytes = buffer.getBytes(at: buffer.readerIndex, length: buffer.readableBytes) ?? []
+//        let data = Data(bytes)
+//        let decoder = JSONDecoder()
+//        return try decoder.decode(AnyCodable.self, from: data)
+//    }
 }

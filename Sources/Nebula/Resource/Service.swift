@@ -79,7 +79,7 @@ extension Service{
     }
     
     @discardableResult
-    public func add(method name: String, argTypes: [String : ValueType]? = nil, action: @escaping MethodAction)->Self{
+    public func add(method name: String, argTypes: [String : ValueType]? = nil, action: @escaping MethodAction) rethrows ->Self{
         self.methods[name] = ServiceMethod(name: name, argTypes:argTypes, action: action)
         return self
     }

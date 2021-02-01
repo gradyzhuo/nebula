@@ -68,7 +68,7 @@ public typealias RawArguments = KeyValuePairs<String, AnyCodable>
 //    }
 //}
 public protocol Argument{
-    
+    var key: String { get }
 }
 
 extension KeyValuePairs where Key == String, Value == AnyCodable{
@@ -113,6 +113,11 @@ public struct _Argument<Value:Codable>: Argument{
     
 }
 
+extension Array where Element: Argument{
+    public func toDictionary()->[String: Argument]{
+        return Dictionary(uniqueKeysWithValues: self.map{ ($0.key, $0) })
+    }
+}
 
 extension Argument{
 //    public encode(by encoder: Encoder)->Data{

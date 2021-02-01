@@ -10,6 +10,10 @@ import Foundation
 public struct ReturnWrapper{
     public internal(set) var data: Data?
     
+    public static func nonreturn()->Self{
+        return .init(data: nil)
+    }
+    
     public static func wrap<T: Encodable>(value: T?) throws ->Self{
         guard let value = value else {
             return .init(data: nil)
